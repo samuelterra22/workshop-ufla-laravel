@@ -16,14 +16,35 @@ Cada arquivo existe para demonstrar uma decisão discutida no workshop.
 
 ### Opção A — Sail (recomendado)
 
+Só tem Docker, sem PHP nem Composer na máquina? Instale as dependências dentro de
+um container descartável — este é o `composer install` sem instalar nada local:
+
 ```bash
 git clone https://github.com/samuelterra22/workshop-ufla-laravel.git
 cd workshop-ufla-laravel
 
-composer install
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php83-composer:latest \
+    composer install --ignore-platform-reqs
+```
+
+- `-u "$(id -u):$(id -g)"` gera os arquivos com o seu usuário, não como `root`.
+- `-v "$(pwd):/var/www/html"` monta o projeto dentro do container.
+- `--ignore-platform-reqs` porque quem valida extensões PHP é o container do Sail,
+  não a sua máquina.
+
+Depois disso o `vendor/bin/sail` já existe e o resto roda por Docker:
+
+```bash
 ./vendor/bin/sail up -d
 ./vendor/bin/sail composer setup
 ```
+
+> Já tem PHP e Composer local? Troque o `docker run …` por um simples
+> `composer install`.
 
 Painel em <http://localhost/admin> · usuário `admin@workshop.test` · senha `password`
 
@@ -54,6 +75,13 @@ alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
 composer check
 ```
 
+Sem PHP nem Composer local? Rode pelo container do Sail — mesmo comando, prefixo
+`./vendor/bin/sail`:
+
+```bash
+./vendor/bin/sail composer check
+```
+
 Roda, em ordem do mais barato para o mais caro:
 
 | # | Checagem | Comando | O que pega |
@@ -81,7 +109,8 @@ Este repositório tem **três defeitos plantados de propósito**. Veja
 [`LAB.md`](LAB.md) para o passo a passo. Resumo:
 
 ```bash
-composer check     # falha em três lugares diferentes
+composer check                    # falha em três lugares diferentes
+./vendor/bin/sail composer check  # mesma coisa, se você só tem Docker
 ```
 
 Sua missão é deixar verde. Cada defeito é pego por uma ferramenta diferente, o
