@@ -1,0 +1,11 @@
+{
+    "preset": "laravel",
+    "ignore": {
+        "words": [
+            "eloquent", "artisan", "middleware", "webhook", "filament",
+            "pedidos", "pedido", "itens", "cliente", "clientes",
+            "produto", "produtos", "estoque", "fiscal", "cnpj", "pix"
+        ],
+        "paths": ["database/migrations", "app/Filament"]
+    }
+}

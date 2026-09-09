@@ -1,0 +1,22 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+
+    paths:
+        - app
+        - database
+        - routes
+        - tests
+
+    excludePaths:
+        - app/Filament/**/Pages/*
+
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: false
+    treatPhpDocTypesAsCertain: false
+
+    # Em projeto legado, gere um baseline com:
+    #   vendor/bin/phpstan analyse --generate-baseline
+    # e exija nível limpo só no código novo.

@@ -1,0 +1,128 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "samuelterra22/workshop-ufla-laravel",
+    "type": "project",
+    "description": "Projeto de referência do workshop de Laravel na UFLA: arquitetura, quality gate, filas e desenvolvimento assistido por IA.",
+    "keywords": ["laravel", "filament", "quality-gate", "workshop", "ufla"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "ext-zip": "*",
+        "charrafimed/global-search-modal": "^4.0",
+        "filament/filament": "^4.0",
+        "filament/spatie-laravel-media-library-plugin": "^4.0",
+        "filament/spatie-laravel-settings-plugin": "^4.0",
+        "filipfonal/filament-log-manager": "^3.0",
+        "laravel/framework": "^12.0",
+        "laravel/horizon": "^5.39",
+        "laravel/octane": "^2.13",
+        "laravel/pennant": "^1.24",
+        "laravel/pulse": "^1.4",
+        "laravel/reverb": "^1.7",
+        "laravel/telescope": "^5.15",
+        "laravel/tinker": "^2.10.1",
+        "league/flysystem-aws-s3-v3": "^3.0",
+        "pxlrbt/filament-environment-indicator": "^3.0",
+        "resend/resend-php": "^1.9",
+        "rickdbcn/filament-email": "^2.2",
+        "sentry/sentry-laravel": "^4.21",
+        "shuvroroy/filament-spatie-laravel-backup": "^3.3",
+        "shuvroroy/filament-spatie-laravel-health": "^3.2",
+        "spatie/cpu-load-health-check": "^1.0",
+        "stephenjude/filament-debugger": "^4.1",
+        "tapp/filament-auditing": "^4.0",
+        "tapp/filament-authentication-log": "^5.0",
+        "viezel/filament-tour": "^4.0"
+    },
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^4.0",
+        "barryvdh/laravel-ide-helper": "^3.6",
+        "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.8",
+        "laravel/boost": "^2.0",
+        "laravel/pail": "^1.2.2",
+        "laravel/pint": "^1.24",
+        "laravel/sail": "^1.41",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.6",
+        "nunomaduro/phpinsights": "^2.13",
+        "pestphp/pest": "^3.8",
+        "pestphp/pest-plugin-drift": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.2",
+        "phpstan/phpstan": "^2.0",
+        "phpunit/phpunit": "^11.5.3",
+        "rector/rector": "^2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi"
+        ],
+
+        "setup": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi",
+            "@php artisan db:seed --ansi"
+        ],
+
+        "lint": "pint",
+        "refactor": "rector",
+
+        "test:lint": "pint --test",
+        "test:refactor": "rector --dry-run",
+        "test:types": "phpstan analyse --memory-limit=1G",
+        "test:insights": "phpinsights analyse --no-interaction --min-quality=80 --min-complexity=75 --min-architecture=80 --min-style=95",
+        "test:unit": "pest --parallel",
+        "test:coverage": "pest --coverage --min=60",
+        "test:security": "composer audit --abandoned=report",
+
+        "check": [
+            "@test:lint",
+            "@test:refactor",
+            "@test:types",
+            "@test:insights",
+            "@test:unit",
+            "@test:security"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

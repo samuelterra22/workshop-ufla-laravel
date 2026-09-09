@@ -1,0 +1,14 @@
+{
+    "preset": "laravel",
+    "cache-file": "storage/pint.cache",
+    "rules": {
+        "declare_strict_types": true,
+        "ordered_imports": { "sort_algorithm": "alpha" },
+        "no_unused_imports": true,
+        "single_quote": true,
+        "trailing_comma_in_multiline": true,
+        "not_operator_with_successor_space": true,
+        "phpdoc_align": { "align": "left" }
+    },
+    "exclude": ["bootstrap/cache", "storage"]
+}

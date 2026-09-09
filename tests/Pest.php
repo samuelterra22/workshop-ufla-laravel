@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+uses(TestCase::class, RefreshDatabase::class)->in('Feature', 'Unit');
+
+/*
+|--------------------------------------------------------------------------
+| Helpers
+|--------------------------------------------------------------------------
+*/
+
+function usuarioAutenticado(): App\Models\User
+{
+    $user = App\Models\User::factory()->create();
+
+    test()->actingAs($user);
+
+    return $user;
+}

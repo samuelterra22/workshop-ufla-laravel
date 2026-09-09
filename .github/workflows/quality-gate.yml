@@ -1,0 +1,127 @@
+name: Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  # Cancela execuções antigas do mesmo PR. Economiza minuto de runner.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------
+  # Job 1 — checagens estáticas. Rápido, sem banco, falha cedo.
+  # ---------------------------------------------------------------------
+  static:
+    name: Análise estática
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: zip, pdo_sqlite, intl
+          coverage: none
+          tools: composer:v2
+
+      - name: Instalar dependências (com cache)
+        uses: ramsey/composer-install@v3
+
+      - name: Cache do Pint
+        uses: actions/cache@v4
+        with:
+          path: storage/pint.cache
+          key: pint-${{ hashFiles('**/composer.lock') }}
+
+      - name: Formatação (Pint)
+        run: composer test:lint
+
+      - name: Refactor pendente (Rector)
+        run: composer test:refactor
+
+      - name: Análise estática (PHPStan + Larastan)
+        run: composer test:types
+
+      - name: Qualidade e complexidade (PHPInsights)
+        run: composer test:insights
+
+      - name: CVE em dependências
+        run: composer test:security
+
+  # ---------------------------------------------------------------------
+  # Job 2 — testes com banco real, divididos em 4 runners paralelos.
+  # ---------------------------------------------------------------------
+  tests:
+    name: Testes (shard ${{ matrix.shard }}/4)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: secret
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: zip, pdo_pgsql, intl
+          coverage: pcov
+
+      - uses: ramsey/composer-install@v3
+
+      - name: Preparar ambiente
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Rodar a suíte
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_DATABASE: testing
+          DB_USERNAME: postgres
+          DB_PASSWORD: secret
+        run: vendor/bin/pest --parallel --shard=${{ matrix.shard }}/4
+
+  # ---------------------------------------------------------------------
+  # Job 3 — a imagem de produção ainda compila?
+  # ---------------------------------------------------------------------
+  image:
+    name: Build da imagem
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Construir (sem publicar)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          target: production
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

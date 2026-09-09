@@ -1,0 +1,21 @@
+{
+    "name": "Workshop Laravel UFLA",
+    "image": "mcr.microsoft.com/devcontainers/php:8.3-bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": { "version": "22" },
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+    "forwardPorts": [8000],
+    "postCreateCommand": "composer install && composer setup",
+    "postAttachCommand": "echo 'Rode: composer check'",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bmewburn.vscode-intelephense-client",
+                "onecentlin.laravel-blade",
+                "EditorConfig.EditorConfig",
+                "SanderRonde.phpstan-vscode"
+            ]
+        }
+    }
+}

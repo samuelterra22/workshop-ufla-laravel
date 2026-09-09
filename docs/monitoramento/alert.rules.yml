@@ -1,0 +1,43 @@
+groups:
+  - name: recursos
+    rules:
+      - alert: MemoriaAlta
+        expr: |
+          (container_memory_usage_bytes / container_spec_memory_limit_bytes) > 0.85
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: '{{ $labels.container_label_com_docker_swarm_service_name }} acima de 85% de memória'
+
+      - alert: CpuAlta
+        expr: |
+          rate(container_cpu_usage_seconds_total[5m]) > 0.85
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: '{{ $labels.container_label_com_docker_swarm_service_name }} com CPU sustentada acima de 85%'
+
+      - alert: DiscoQuaseCheio
+        expr: |
+          (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"}
+            / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}) < 0.15
+        for: 10m
+        labels: { severity: critical }
+        annotations:
+          summary: 'Menos de 15% de disco livre em {{ $labels.instance }}'
+
+  - name: disponibilidade
+    rules:
+      - alert: ContainerReiniciando
+        expr: rate(container_start_time_seconds[15m]) > 0
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: 'Container reiniciando em loop: {{ $labels.container_label_com_docker_swarm_service_name }}'
+
+      - alert: AlvoForaDoAr
+        expr: up == 0
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: 'Alvo {{ $labels.job }} sem resposta há 2 minutos'
