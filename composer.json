@@ -20,7 +20,7 @@
         "laravel/pulse": "^1.4",
         "laravel/reverb": "^1.7",
         "laravel/telescope": "^5.15",
-        "laravel/tinker": "^2.10.1",
+        "laravel/tinker": "^3.0.2",
         "league/flysystem-aws-s3-v3": "^3.0",
         "pxlrbt/filament-environment-indicator": "^3.0",
         "resend/resend-php": "^1.9",
