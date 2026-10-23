@@ -33,7 +33,7 @@ jobs:
         uses: ramsey/composer-install@v3
 
       - name: Cache do Pint
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: storage/pint.cache
           key: pint-${{ hashFiles('**/composer.lock') }}
