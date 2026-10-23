@@ -26,7 +26,7 @@
         "resend/resend-php": "^1.9",
         "rickdbcn/filament-email": "^2.2",
         "sentry/sentry-laravel": "^4.21",
-        "shuvroroy/filament-spatie-laravel-backup": "^3.3",
+        "shuvroroy/filament-spatie-laravel-backup": "^4.0",
         "shuvroroy/filament-spatie-laravel-health": "^3.2",
         "spatie/cpu-load-health-check": "^1.0",
         "stephenjude/filament-debugger": "^4.1",
