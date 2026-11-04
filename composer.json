@@ -8,7 +8,7 @@
     "require": {
         "php": "^8.2",
         "ext-zip": "*",
-        "charrafimed/global-search-modal": "^4.0",
+        "charrafimed/global-search-modal": "^5.0",
         "filament/filament": "^4.0",
         "filament/spatie-laravel-media-library-plugin": "^4.0",
         "filament/spatie-laravel-settings-plugin": "^4.0",
